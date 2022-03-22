@@ -17,7 +17,6 @@
 
 package com.tencent.bugly.gradle
 
-import com.android.builder.core.DefaultManifestParser
 import com.tencent.bugly.symtabtool.android.SymtabToolAndroid
 import org.apache.http.Consts
 import org.apache.http.HttpEntity
@@ -607,7 +606,17 @@ class BuglyPlugin implements Plugin<Project> {
                     return
                 }
                 if (variant.name.capitalize().contains("Release")) {
-                    File mappingFile = variant.getMappingFile()
+                    def mappingProvider = variant.getMappingFileProvider()
+                    File mappingFile = null;
+                    if (mappingProvider != null) {
+
+                        def files = mappingProvider.get().files
+
+                        if (!files.isEmpty()) {
+
+                            mappingFile = files.get(0)
+                        }
+                    }
                     if (null != mappingFile) {
                         String mappingFileSuffix = project.name
                         if (flavorName != null && !flavorName.isEmpty()) {
@@ -626,7 +635,17 @@ class BuglyPlugin implements Plugin<Project> {
                     return
                 }
                 if (variant.name.capitalize().contains("Release")) {
-                    File mappingFile = variant.getMappingFile()                    
+                    def mappingProvider = variant.getMappingFileProvider()
+                    File mappingFile = null;
+                    if (mappingProvider != null) {
+
+                        def files = mappingProvider.get().files
+
+                        if (!files.isEmpty()) {
+
+                            mappingFile = files.get(0)
+                        }
+                    }
                     if (null != mappingFile) {
                         String mappingFileSuffix = project.name
                         if (flavorName != null && !flavorName.isEmpty()) {
@@ -686,9 +705,9 @@ class BuglyPlugin implements Plugin<Project> {
             versionName = project.android.defaultConfig.versionName
         }
         // Get version name of "AndroidManifest.xml".
-        if (null == versionName || versionName.isEmpty()) {
-            versionName = new DefaultManifestParser().getVersionName(project.android.sourceSets.main.manifest.srcFile)
-        }
+//        if (null == versionName || versionName.isEmpty()) {
+//            versionName = new DefaultManifestParser().getVersionName(project.android.sourceSets.main.manifest.srcFile)
+//        }
         return versionName
     }
 
